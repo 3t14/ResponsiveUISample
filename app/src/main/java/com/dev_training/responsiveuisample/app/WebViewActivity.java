@@ -1,38 +1,34 @@
 package com.dev_training.responsiveuisample.app;
 
-import android.content.Intent;
+import android.app.Activity;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
-
-import com.dev_training.responsiveuisample.app.dummy.DummyContent;
 
 
-public class MainActivity extends FragmentActivity
-        implements BookmarkFragment.OnFragmentInteractionListener {
-
+public class WebViewActivity extends FragmentActivity
+    implements MyWebViewFragment.OnFragmentInteractionListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_web_view);
 
         if (savedInstanceState == null) {
+            String url = getIntent().getExtras().getString("url");
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new BookmarkFragment())
-                    .commit();
+                .add(R.id.web_vew_container, MyWebViewFragment.newInstance(url))
+                .commit();
         }
-
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.web_view, menu);
         return true;
     }
 
@@ -49,15 +45,7 @@ public class MainActivity extends FragmentActivity
     }
 
     @Override
-    public void onFragmentInteraction(String url) {
-        DummyContent.DummyItem item = DummyContent.ITEM_MAP.get(url);
-
-        Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra("url",url);
-        intent.putExtra("title", item.title);
-        intent.putExtra("description", item.description);
-        startActivity(intent);
-
-        Toast.makeText(this, url, Toast.LENGTH_LONG).show();
+    public void onFragmentInteraction(Uri uri) {
+        // 結果が返されるメソッド
     }
 }

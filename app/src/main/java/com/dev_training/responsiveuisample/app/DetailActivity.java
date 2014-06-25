@@ -1,30 +1,35 @@
 package com.dev_training.responsiveuisample.app;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.dev_training.responsiveuisample.app.dummy.DummyContent;
 
-
-public class MainActivity extends FragmentActivity
-        implements BookmarkFragment.OnFragmentInteractionListener {
-
+public class DetailActivity extends FragmentActivity
+       implements DetailFragment.OnFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_detail);
 
+        Bundle extras = getIntent().getExtras();
+
+        String url = extras.getString("url");
+        String title = extras.getString("title");
+        String description = extras.getString("description");
+
+        // Fragmentの生成とパラメータの引き渡し
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new BookmarkFragment())
+                    .add(R.id.detail_container, DetailFragment.newInstance(url, title, description))
                     .commit();
         }
-
     }
 
 
@@ -32,7 +37,7 @@ public class MainActivity extends FragmentActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.detail, menu);
         return true;
     }
 
@@ -50,12 +55,9 @@ public class MainActivity extends FragmentActivity
 
     @Override
     public void onFragmentInteraction(String url) {
-        DummyContent.DummyItem item = DummyContent.ITEM_MAP.get(url);
-
-        Intent intent = new Intent(this, DetailActivity.class);
+        // 次の画面へ行きWebページを表示する
+        Intent intent = new Intent(this, WebViewActivity.class);
         intent.putExtra("url",url);
-        intent.putExtra("title", item.title);
-        intent.putExtra("description", item.description);
         startActivity(intent);
 
         Toast.makeText(this, url, Toast.LENGTH_LONG).show();
