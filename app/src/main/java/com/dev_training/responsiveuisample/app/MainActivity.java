@@ -1,17 +1,29 @@
 package com.dev_training.responsiveuisample.app;
 
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.dev_training.responsiveuisample.app.dummy.DummyContent;
 
 
 public class MainActivity extends FragmentActivity
-        implements BookmarkFragment.OnFragmentInteractionListener {
+        implements BookmarkFragment.OnFragmentInteractionListener,
+                    DetailFragment.OnFragmentInteractionListener
+{
+
+
+    private static final int LAYOUT_ONE_COLUMN = 0;
+    private static final int LAYOUT_TWO_COLUMN = 1;
+    private int currentLayout;
+    private String url ="";
+    private String title ="";
+    private String description ="";
 
 
     @Override
@@ -19,10 +31,28 @@ public class MainActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        View container = findViewById(R.id.container);
+        View detail_container = findViewById(R.id.detail_container);
+
+        // のちの振り分け処理に利用
+        if (detail_container == null){
+            // One Pane
+            currentLayout = LAYOUT_ONE_COLUMN;
+        } else {
+            // Two Pane
+            currentLayout = LAYOUT_TWO_COLUMN;
+        }
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new BookmarkFragment())
                     .commit();
+            // 2列
+            if (currentLayout == LAYOUT_TWO_COLUMN){
+                getSupportFragmentManager().beginTransaction()
+                    .add(R.id.detail_container,
+                            DetailFragment.newInstance(url, title, description));
+            }
         }
 
     }
@@ -50,14 +80,34 @@ public class MainActivity extends FragmentActivity
 
     @Override
     public void onFragmentInteraction(String url) {
-        DummyContent.DummyItem item = DummyContent.ITEM_MAP.get(url);
-
-        Intent intent = new Intent(this, DetailActivity.class);
+        // 次の画面へ行きWebページを表示する
+        Intent intent = new Intent(this, WebViewActivity.class);
         intent.putExtra("url",url);
-        intent.putExtra("title", item.title);
-        intent.putExtra("description", item.description);
         startActivity(intent);
 
-        Toast.makeText(this, url, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, url, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onFragmentInteraction(String url, String title, String description) {
+        // DetailFragment.onFragmentInteractionとの差別化を図るため、
+        // 引数を３つに修正
+
+        if (currentLayout == LAYOUT_ONE_COLUMN) {
+            Intent intent = new Intent(this, DetailActivity.class);
+            intent.putExtra("url", url);
+            intent.putExtra("title", title);
+            intent.putExtra("description", description);
+            startActivity(intent);
+        } else {
+            // フラグメントの置き換え
+            getSupportFragmentManager().
+                    beginTransaction()
+                        .replace(R.id.detail_container,
+                            DetailFragment.newInstance(url,title,description))
+                       .commit();
+        }
+
+        Toast.makeText(this, url, Toast.LENGTH_SHORT).show();
     }
 }

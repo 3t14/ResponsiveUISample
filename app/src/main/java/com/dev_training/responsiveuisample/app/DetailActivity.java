@@ -60,6 +60,6 @@ public class DetailActivity extends FragmentActivity
         intent.putExtra("url",url);
         startActivity(intent);
 
-        Toast.makeText(this, url, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, url, Toast.LENGTH_SHORT).show();
     }
 }

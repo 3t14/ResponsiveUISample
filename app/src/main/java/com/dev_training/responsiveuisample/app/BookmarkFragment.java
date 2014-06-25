@@ -117,7 +117,9 @@ public class BookmarkFragment extends Fragment implements AbsListView.OnItemClic
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).url);
+            mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).url,
+                    DummyContent.ITEMS.get(position).title,
+                    DummyContent.ITEMS.get(position).description);
         }
     }
 
@@ -146,7 +148,7 @@ public class BookmarkFragment extends Fragment implements AbsListView.OnItemClic
     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onFragmentInteraction(String url);
+        public void onFragmentInteraction(String url, String title, String description);
     }
 
 }
