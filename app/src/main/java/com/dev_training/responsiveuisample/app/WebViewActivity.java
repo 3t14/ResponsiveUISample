@@ -19,7 +19,7 @@ public class WebViewActivity extends FragmentActivity
         if (savedInstanceState == null) {
             String url = getIntent().getExtras().getString("url");
             getSupportFragmentManager().beginTransaction()
-                .add(R.id.web_vew_container, MyWebViewFragment.newInstance(url))
+                .add(R.id.web_view_container, MyWebViewFragment.newInstance(url))
                 .commit();
         }
     }
@@ -45,7 +45,7 @@ public class WebViewActivity extends FragmentActivity
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public void onFragmentInteraction() {
         // 結果が返されるメソッド
     }
 }

@@ -14,12 +14,15 @@ import com.dev_training.responsiveuisample.app.dummy.DummyContent;
 
 public class MainActivity extends FragmentActivity
         implements BookmarkFragment.OnFragmentInteractionListener,
-                    DetailFragment.OnFragmentInteractionListener
+                    DetailFragment.OnFragmentInteractionListener,
+                    MyWebViewFragment.OnFragmentInteractionListener
 {
 
 
     private static final int LAYOUT_ONE_COLUMN = 0;
     private static final int LAYOUT_TWO_COLUMN = 1;
+    private static final int LAYOUT_THREE_COLUMN = 2;
+
     private int currentLayout;
     private String url ="";
     private String title ="";
@@ -33,15 +36,20 @@ public class MainActivity extends FragmentActivity
 
         View container = findViewById(R.id.container);
         View detail_container = findViewById(R.id.detail_container);
+        View web_view_container = findViewById(R.id.web_view_container);
 
         // のちの振り分け処理に利用
         if (detail_container == null){
             // One Pane
             currentLayout = LAYOUT_ONE_COLUMN;
-        } else {
+        } else  if (web_view_container == null){
             // Two Pane
             currentLayout = LAYOUT_TWO_COLUMN;
+        } else {
+            // Three Pane
+            currentLayout = LAYOUT_THREE_COLUMN;
         }
+        Toast.makeText(this,"layout="+currentLayout, Toast.LENGTH_LONG).show();
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -52,6 +60,11 @@ public class MainActivity extends FragmentActivity
                 getSupportFragmentManager().beginTransaction()
                     .add(R.id.detail_container,
                             DetailFragment.newInstance(url, title, description));
+            }
+            if (currentLayout == LAYOUT_THREE_COLUMN){
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.web_view_container,
+                               MyWebViewFragment.newInstance(url));
             }
         }
 
@@ -80,10 +93,19 @@ public class MainActivity extends FragmentActivity
 
     @Override
     public void onFragmentInteraction(String url) {
-        // 次の画面へ行きWebページを表示する
-        Intent intent = new Intent(this, WebViewActivity.class);
-        intent.putExtra("url",url);
-        startActivity(intent);
+        if (currentLayout == LAYOUT_TWO_COLUMN) {
+            // 次の画面へ行きWebページを表示する
+            Intent intent = new Intent(this, WebViewActivity.class);
+            intent.putExtra("url", url);
+            startActivity(intent);
+        }else {
+            // フラグメントの置き換え
+            getSupportFragmentManager().
+                    beginTransaction()
+                    .replace(R.id.web_view_container,
+                            MyWebViewFragment.newInstance(url))
+                    .commit();
+        }
 
         Toast.makeText(this, url, Toast.LENGTH_SHORT).show();
     }
@@ -109,5 +131,11 @@ public class MainActivity extends FragmentActivity
         }
 
         Toast.makeText(this, url, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onFragmentInteraction() {
+        //MyWebViewFragmentからのアクションの対応
+        // 他の同一名との差別化を図るために引数なしに変更
     }
 }
